@@ -60,7 +60,7 @@ function displayAlbum(album_list) {
             let head_of_photos = document.getElementById('photoheading');
             head_of_photos.innerHTML = '';
             head_of_photos.innerText = `Photos in ${returning_object.title}`;
-
+            
             displayPhotos(album_photos);
         });
 
