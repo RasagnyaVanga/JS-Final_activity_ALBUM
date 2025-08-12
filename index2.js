@@ -1,19 +1,21 @@
-async function fetchUsersData() {
+let head_of_albums = document.getElementById('albumheading');
+let albumGrid = document.getElementById("albumGrid");
+let head_of_photos = document.getElementById('photoheading');
+let photoGrid = document.getElementById('photoGrid');
+
+async function fetchusersData() {
     try {
         let usersResponse = await fetch('https://jsonplaceholder.typicode.com/users');
-        let usersdata = await usersResponse.json();
+        let usersData = await usersResponse.json();
         let usersDropdown = document.getElementById('users_dropdown');    //picking the dropdown element 
-        function populateUsers(usersdata) {
-            usersdata.forEach(user => {
-                let option = document.createElement('option');  //creating each option
-                option.value = user.id;
-                option.textContent = user.name;
-                usersDropdown.appendChild(option);
-            });
-        }
-        populateUsers(usersdata);
+        usersData.forEach(user => {
+            let option = document.createElement('option');  //creating each option
+            option.value = user.id;
+            option.textContent = user.name;
+            usersDropdown.appendChild(option);
+        });
         usersDropdown.addEventListener('change', () => {
-            onChangeUser(usersDropdown, usersdata);
+            onChangeUser(usersDropdown, usersData);
         });
     }
     catch (error) {
@@ -21,64 +23,55 @@ async function fetchUsersData() {
     }
 }
 
-fetchUsersData();
+fetchusersData();
 
-function onChangeUser(usersDropdown, usersdata) {
-    let user_Id = Number(usersDropdown.value); //.value gives string so converting it into number
+function onChangeUser(usersDropdown, usersData) {
+    let user_Id = Number(usersDropdown.value); 
 
-    let returning_object = usersdata.find(user => user.id === user_Id); //heading of albums with the user selected
-
-    let head_of_albums = document.getElementById('albumheading');
-    head_of_albums.innerHTML = '';
-    head_of_albums.innerText = `Albums by ${returning_object.name}`;
-
-    let head_of_photos = document.getElementById('photoheading');
+    head_of_albums.innerHTML = 'Albums by';//reset to default
+    albumGrid.innerHTML = '';
     head_of_photos.innerText = 'Photos in:'; // reset to default label
-
-    let photoGrid = document.getElementById('photoGrid');
-    photoGrid.innerHTML = ''; // remove all previous photo elements
+    photoGrid.innerHTML = '';
     
+    let returningObject = usersData.find(user => user.id === user_Id); 
+    head_of_albums.innerText = `Albums by ${returningObject.name}`;
+
     fetchAlbumData(user_Id);
 }
 
 async function fetchAlbumData(user_Id) {
-    let albumsResponse = await fetch('https://jsonplaceholder.typicode.com/albums');
-    let albumsdata = await albumsResponse.json();
+    let albumsResponse = await fetch(`https://jsonplaceholder.typicode.com/albums?userId=${user_Id}`);
+    let albumsData = await albumsResponse.json();
 
-    let album_grid = document.getElementById("albumGrid"); //picking the whole albumgrid div 
-    album_grid.innerHTML = ''; //clearing already existing albums
+    albumGrid.innerHTML = ''; //clearing already existing albums
 
-    let album_list = albumsdata.filter(album => album.userId === user_Id);
-    album_list.forEach(album => {
+    albumsData.forEach(album => {
         let eachalbum_div = document.createElement('button');
         eachalbum_div.className = 'each_album';
         eachalbum_div.textContent = album.title;
 
         eachalbum_div.addEventListener('click', () => {
-            fetchPhotoData(album.id, albumsdata);
+            fetchPhotoData(album.id, albumsData);
         });
 
-        album_grid.appendChild(eachalbum_div);
+        albumGrid.appendChild(eachalbum_div);
     });
-
 }
 
-async function fetchPhotoData(album_Id, albumsdata) {
-    let photosResponse = await fetch('https://jsonplaceholder.typicode.com/photos');
-    let photosdata = await photosResponse.json();
+async function fetchPhotoData(album_Id, albumsData) {
+    let photosResponse = await fetch(`https://jsonplaceholder.typicode.com/photos?albumId=${album_Id}`);
+    let photosData = await photosResponse.json();
 
-    let returning_object = albumsdata.find(a => a.id === album_Id); //heading of photos with the album title
-    let head_of_photos = document.getElementById('photoheading');
+    let returningObject = albumsData.find(a => a.id === album_Id);
+
     head_of_photos.innerHTML = '';
-    head_of_photos.innerText = `Photos in ${returning_object.title}`;
+    head_of_photos.innerText = `Photos in ${returningObject.title}`;
 
-    let album_photos = photosdata.filter(photo => photo.albumId === album_Id);
-    let photos_grid = document.getElementById("photoGrid");
-    photos_grid.innerHTML = ''; //clearing already existing photos
-    album_photos.forEach(photo => {
+    photoGrid.innerHTML = ''; //clearing already existing photos
+    photosData.forEach(photo => {
         let eachphoto_div = document.createElement('div');
         eachphoto_div.className = 'each_photo';
         eachphoto_div.textContent = photo.title;
-        photos_grid.appendChild(eachphoto_div);
+        photoGrid.appendChild(eachphoto_div);
     });
 }
