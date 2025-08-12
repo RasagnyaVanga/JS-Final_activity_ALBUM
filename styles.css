@@ -1,0 +1,31 @@
+
+*{
+  font-size:20px;
+}
+
+.app-container{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  padding:100px;
+}
+h1{
+  font-weight: bold;
+  font-size: 28px;
+  text-transform: capitalize;
+}
+.album-grid
+{
+  display:grid;
+  gap:10px;
+  grid-template-columns:1fr 1fr;
+}
+.photo-grid{
+  display:grid;
+  gap:10px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.each_photo{
+  border:1px solid;
+  padding:10px;
+}
